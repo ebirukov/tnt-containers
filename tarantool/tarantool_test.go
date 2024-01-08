@@ -113,7 +113,7 @@ func TestRunContainer(t *testing.T) {
 		{
 			name: "Tarantool custom registry",
 			opts: []testcontainers.ContainerCustomizer{
-				WithTarantool15("registry-gitlab.corp.mail.ru/cloud/docker/cloud-c7-test-tnt15", 5*time.Second),
+				WithTarantool15("ebirukov/cloud-c7-test-tnt15", 5*time.Second),
 				WithConfigFile("testdata/tarantool.cfg"),
 				WithLogger(testcontainers.Logger),
 			},
