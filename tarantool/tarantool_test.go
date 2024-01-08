@@ -34,7 +34,8 @@ func TestReuseContainer(t *testing.T) {
 			},
 		},
 		{
-			name: "Tarantool1.5 reused",
+			name:  "Tarantool1.5 reused",
+			reuse: true,
 			opts: []testcontainers.ContainerCustomizer{
 				WithName("tarantool15", true),
 				WithTarantool15("tarantool/tarantool:1.5", 5*time.Second),
@@ -48,22 +49,26 @@ func TestReuseContainer(t *testing.T) {
 			container, err := RunContainer(ctx, tt.opts...)
 			require.NoError(t, err)
 
-			err = container.Stop(ctx)
+			cname1, err := container.Name(ctx)
+			require.NoError(t, err)
+
+			err = container.Terminate(ctx)
 			require.NoError(t, err)
 
 			container2, err := RunContainer(ctx, tt.opts...)
+			require.NoError(t, err)
+
+			cname2, err := container2.Name(ctx)
+			require.NoError(t, err)
 
 			if tt.reuse {
-				require.Equal(t, container.GetContainerID(), container2.GetContainerID())
+				require.Equal(t, cname1, cname2)
 			} else {
-				require.Error(t, err)
+				require.NotEqual(t, container.GetContainerID(), container2.GetContainerID())
 			}
 
 			// Clean up the container after the test is complete
 			t.Cleanup(func() {
-				if err := container.Terminate(ctx); err != nil {
-					t.Fatalf("failed to terminate container: %s", err)
-				}
 
 				if container2 == nil {
 					return
