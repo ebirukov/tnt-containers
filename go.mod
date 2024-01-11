@@ -1,4 +1,4 @@
-module github.com/ebirukov/tnt-containers.git
+module github.com/ebirukov/tnt-containers
 
 go 1.19
 
